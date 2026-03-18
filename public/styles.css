@@ -77,6 +77,13 @@ body {
   height: 100%;
 }
 
+/* AR.js camera feed — pinch zoom controlled via JS */
+video,
+.a-canvas {
+  transform-origin: center center;
+  transition: transform 0.05s linear;
+}
+
 /* ── Loader overlay ── */
 #loader {
   position: fixed;

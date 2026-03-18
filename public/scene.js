@@ -34,7 +34,56 @@ async function initScene() {
   `;
 
   const scene = arContainer.querySelector('a-scene');
-  scene.addEventListener('loaded', hideLoader);
+  scene.addEventListener('loaded', () => {
+    hideLoader();
+    enablePinchZoom();
+  });
+}
+
+function enablePinchZoom() {
+  let currentScale = 1;
+  let startDistance = null;
+  const MIN_SCALE = 0.5;
+  const MAX_SCALE = 3;
+
+  function getDistance(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+
+  function applyScale(scale) {
+    const targets = document.querySelectorAll('video, .a-canvas');
+    targets.forEach(el => {
+      el.style.transform = `scale(${scale})`;
+    });
+  }
+
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      startDistance = getDistance(e.touches);
+    }
+  });
+
+  document.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2 && startDistance !== null) {
+      const newDistance = getDistance(e.touches);
+      const delta = newDistance / startDistance;
+      const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, currentScale * delta));
+      applyScale(newScale);
+    }
+  });
+
+  document.addEventListener('touchend', (e) => {
+    if (e.touches.length < 2 && startDistance !== null) {
+      const targets = document.querySelectorAll('video, .a-canvas');
+      if (targets.length > 0) {
+        const current = new DOMMatrix(getComputedStyle(targets[0]).transform);
+        currentScale = current.a;
+      }
+      startDistance = null;
+    }
+  });
 }
 
 initScene();
