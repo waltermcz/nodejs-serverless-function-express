@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geothermal AR</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="permission-screen">
+    <div class="permission-card">
+      <h1>Geothermal AR</h1>
+      <p>This experience requires access to your camera to display augmented reality content.</p>
+      <button id="start-btn">Allow Camera &amp; Start</button>
+    </div>
+  </div>
+
+  <div id="ar-container" class="hidden">
+    <div id="loader" class="hidden">
+      <div class="spinner"></div>
+      <p>Loading AR scene…</p>
+    </div>
+
+    <!-- AR.js scene is injected by scene.js after permission is granted -->
+  </div>
+
+  <script type="module" src="scene.js"></script>
+</body>
+</html>
