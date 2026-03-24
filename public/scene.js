@@ -13,20 +13,13 @@ async function initScene() {
       arjs="sourceType: webcam; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
     >
-      <a-marker preset="hiro">
+      <a-marker type="pattern" url="sample.patt">
         <a-entity
           geometry="primitive: box; depth: 0.5; height: 0.5; width: 0.5"
           material="color: #e25822; opacity: 0.85"
-          position="0 0.25 0"
+          position="-0.5 0.25 0"
           animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear"
         ></a-entity>
-        <a-text
-          value="Geothermal\nEnergy"
-          align="center"
-          position="0 1 0"
-          color="#ffffff"
-          width="2"
-        ></a-text>
       </a-marker>
 
       <a-entity camera></a-entity>
@@ -37,6 +30,13 @@ async function initScene() {
   scene.addEventListener('loaded', () => {
     hideLoader();
     enablePinchZoom();
+
+    const marker = scene.querySelector('a-marker');
+    const model = document.createElement('a-entity');
+    model.setAttribute('gltf-model', 'url(https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb)');
+    model.setAttribute('position', '0.5 0 0');
+    model.setAttribute('scale', '0.1 0.1 0.1');
+    marker.appendChild(model);
   });
 }
 
