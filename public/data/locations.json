@@ -1,0 +1,38 @@
+[
+  {
+    "id": "solar-panels",
+    "label": "Solar Panel Array",
+    "description": "These panels generate 120kW of clean energy, offsetting 85 tonnes of CO2 per year.",
+    "lat": 0.0000,
+    "lng": 0.0000,
+    "color": "#f5a623",
+    "scale": "15 15 15"
+  },
+  {
+    "id": "recycling-center",
+    "label": "Recycling Center",
+    "description": "Campus diverts 60% of waste from landfill through this facility.",
+    "lat": 0.0001,
+    "lng": 0.0001,
+    "color": "#4caf50",
+    "scale": "15 15 15"
+  },
+  {
+    "id": "ev-charging",
+    "label": "EV Charging Station",
+    "description": "8 charging bays powered by 100% renewable energy.",
+    "lat": 0.0002,
+    "lng": -0.0001,
+    "color": "#2196f3",
+    "scale": "15 15 15"
+  },
+  {
+    "id": "campus-garden",
+    "label": "Campus Garden",
+    "description": "Student-run garden producing 200kg of organic food each semester.",
+    "lat": -0.0001,
+    "lng": 0.0002,
+    "color": "#8bc34a",
+    "scale": "15 15 15"
+  }
+]

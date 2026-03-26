@@ -3,29 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Geothermal AR</title>
+  <title>Campus Sustainability AR</title>
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <style>
+    .home-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100dvh;
+      padding: 1.5rem;
+      gap: 1.5rem;
+    }
+
+    .home-screen h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #e25822;
+      text-align: center;
+    }
+
+    .home-screen p {
+      font-size: 0.95rem;
+      color: #aaa;
+      text-align: center;
+      max-width: 320px;
+    }
+
+    .experience-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .experience-card {
+      background: #1a1a1a;
+      border: 1px solid #2e2e2e;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: border-color 0.2s;
+    }
+
+    .experience-card:hover {
+      border-color: #e25822;
+    }
+
+    .experience-card h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #e25822;
+    }
+
+    .experience-card p {
+      font-size: 0.875rem;
+      color: #aaa;
+      text-align: left;
+    }
+  </style>
 </head>
 <body>
-  <div id="permission-screen">
-    <div class="permission-card">
-      <h1>Geothermal AR</h1>
-      <p>This experience requires access to your camera to display augmented reality content.</p>
-      <button id="start-btn">Allow Camera &amp; Start</button>
+  <div class="home-screen">
+    <h1>Campus Sustainability AR</h1>
+    <p>Choose an experience to explore sustainability on campus.</p>
+
+    <div class="experience-cards">
+      <a href="marker/index.html" class="experience-card">
+        <h2>Marker AR</h2>
+        <p>Point your camera at a printed campus marker to reveal sustainability data.</p>
+      </a>
+
+      <a href="location/index.html" class="experience-card">
+        <h2>Campus Location AR</h2>
+        <p>Walk around campus and discover AR content anchored to real locations.</p>
+      </a>
     </div>
   </div>
-
-  <div id="ar-container" class="hidden">
-    <div id="loader" class="hidden">
-      <div class="spinner"></div>
-      <p>Loading AR scene…</p>
-    </div>
-
-    <!-- AR.js scene is injected by scene.js after permission is granted -->
-  </div>
-
-  <script type="module" src="scene.js"></script>
 </body>
 </html>

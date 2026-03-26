@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Location AR</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+</head>
+<body>
+  <div id="permission-screen">
+    <div class="permission-card">
+      <h1>Campus Location AR</h1>
+      <p>This experience requires your camera and location to place AR content around campus.</p>
+      <button id="start-btn">Allow Camera &amp; Location</button>
+    </div>
+  </div>
+
+  <div id="ar-container" class="hidden">
+    <div id="loader" class="hidden">
+      <div class="spinner"></div>
+      <p>Finding your location…</p>
+    </div>
+  </div>
+
+  <script type="module" src="scene.js"></script>
+</body>
+</html>

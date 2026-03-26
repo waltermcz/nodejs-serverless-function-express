@@ -10,7 +10,7 @@
 /** Returns the static entity HTML to embed inside the marker. */
 export function getMarkerTemplate() {
   return `
-    <a-marker type="pattern" url="assets/markers/sample.patt">
+    <a-marker type="pattern" url="../assets/markers/sample.patt">
       <a-entity
         geometry="primitive: box; depth: 0.5; height: 0.5; width: 0.5"
         material="color: #e25822; opacity: 0.85"
