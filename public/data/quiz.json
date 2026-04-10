@@ -1,0 +1,120 @@
+[
+  {
+    "locationId": "solar-panels",
+    "topic": "solar-energy",
+    "questions": [
+      {
+        "q": "What is the rated power capacity of this campus solar array?",
+        "options": ["60 kW", "90 kW", "120 kW", "200 kW"],
+        "answer": 2,
+        "topic": "solar-energy",
+        "explanation": "The array is rated at 120 kW — enough to power roughly 20 average U.S. homes."
+      },
+      {
+        "q": "How many tonnes of CO₂ does this solar array offset each year?",
+        "options": ["42 tonnes", "85 tonnes", "150 tonnes", "200 tonnes"],
+        "answer": 1,
+        "topic": "carbon-offset",
+        "explanation": "85 tonnes of CO₂ avoided annually — equivalent to taking about 18 cars off the road."
+      },
+      {
+        "q": "Which layer of a solar panel converts sunlight directly into electricity?",
+        "options": ["Tempered glass cover", "Aluminum frame", "Silicon semiconductor (P-N junction)", "Polymer backsheet"],
+        "answer": 2,
+        "topic": "solar-energy",
+        "explanation": "The silicon P-N junction is the photovoltaic cell. Photons knock electrons loose, creating a current."
+      }
+    ]
+  },
+  {
+    "locationId": "recycling-center",
+    "topic": "recycling",
+    "questions": [
+      {
+        "q": "What percentage of campus solid waste does this center divert from landfill?",
+        "options": ["30%", "45%", "60%", "80%"],
+        "answer": 2,
+        "topic": "recycling",
+        "explanation": "60% diversion rate — the national campus average is around 40%, so this exceeds it by 20 points."
+      },
+      {
+        "q": "Which material provides the highest energy savings when recycled instead of virgin production?",
+        "options": ["Paper", "Aluminum", "Glass", "Plastic"],
+        "answer": 1,
+        "topic": "recycling",
+        "explanation": "Recycling aluminum saves up to 95% of the energy needed to produce it from bauxite ore."
+      },
+      {
+        "q": "What is 'wish-cycling'?",
+        "options": [
+          "Donating old bikes to campus",
+          "Buying products made from recycled content",
+          "Composting food waste at home",
+          "Placing non-recyclables in the bin hoping they'll be recycled"
+        ],
+        "answer": 3,
+        "topic": "waste-reduction",
+        "explanation": "Wish-cycling contaminates entire loads — when in doubt, throw it out (or compost)."
+      }
+    ]
+  },
+  {
+    "locationId": "ev-charging",
+    "topic": "ev-charging",
+    "questions": [
+      {
+        "q": "How many EV charging bays does the campus station provide?",
+        "options": ["4", "6", "8", "12"],
+        "answer": 2,
+        "topic": "ev-charging",
+        "explanation": "8 bays are available 24/7; the station handles both Level 2 AC and DC fast charging."
+      },
+      {
+        "q": "What fraction of the electricity used for charging comes from renewable sources?",
+        "options": ["50%", "75%", "90%", "100%"],
+        "answer": 3,
+        "topic": "renewable-energy",
+        "explanation": "The station is powered entirely by the campus solar array and purchased RECs."
+      },
+      {
+        "q": "Which connector standard do most North American EVs (non-Tesla) use for DC fast charging?",
+        "options": ["CHAdeMO", "Tesla NACS", "CCS (Combined Charging System)", "J1772"],
+        "answer": 2,
+        "topic": "electric-vehicles",
+        "explanation": "CCS (SAE Combo) combines AC and DC pins in one plug — now the dominant standard. NACS is Tesla's; J1772 is AC-only."
+      }
+    ]
+  },
+  {
+    "locationId": "campus-garden",
+    "topic": "campus-garden",
+    "questions": [
+      {
+        "q": "How much organic food does the campus garden harvest each semester?",
+        "options": ["50 kg", "100 kg", "150 kg", "200 kg"],
+        "answer": 3,
+        "topic": "campus-garden",
+        "explanation": "200 kg per semester — all donated to the campus food pantry, cutting food insecurity and transport emissions."
+      },
+      {
+        "q": "Who manages the day-to-day operations of the campus garden?",
+        "options": ["Students", "Facilities staff", "Outside contractors", "Nutrition faculty"],
+        "answer": 0,
+        "topic": "campus-garden",
+        "explanation": "A student-run crew of volunteers plants, tends, and harvests — earning service-learning credit."
+      },
+      {
+        "q": "What is the primary benefit of composting kitchen and garden waste on-site?",
+        "options": [
+          "Eliminates all campus pests",
+          "Reduces campus water consumption by 50%",
+          "Returns nutrients to the soil, reducing need for synthetic fertiliser",
+          "Generates electricity through biogas"
+        ],
+        "answer": 2,
+        "topic": "composting",
+        "explanation": "On-site composting closes the nutrient loop: food scraps become rich humus that feeds next season's plants."
+      }
+    ]
+  }
+]

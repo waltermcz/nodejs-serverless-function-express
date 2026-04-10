@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb",
+    "locationId": "solar-panels",
+    "type": "model",
+    "priority": 1,
+    "label": "Solar Panel 3D Model"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxAnimated/glTF-Binary/BoxAnimated.glb",
+    "locationId": "recycling-center",
+    "type": "model",
+    "priority": 2,
+    "label": "Recycling Center 3D Model"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/CesiumMilkTruck/glTF-Binary/CesiumMilkTruck.glb",
+    "locationId": "ev-charging",
+    "type": "model",
+    "priority": 3,
+    "label": "EV Charging Station 3D Model"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/glTF-Binary/Fox.glb",
+    "locationId": "campus-garden",
+    "type": "model",
+    "priority": 4,
+    "label": "Campus Garden 3D Model"
+  }
+]

@@ -7,6 +7,130 @@
   <link rel="stylesheet" href="../styles.css" />
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  <style>
+    /* ── Quiz overlay ─────────────────────────────────────────────────────── */
+    #quiz-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px;
+      z-index: 10001;
+      pointer-events: none;
+    }
+    #quiz-overlay.active { pointer-events: all; }
+
+    .quiz-card {
+      background: rgba(10, 10, 10, 0.92);
+      border: 1px solid #e25822;
+      border-radius: 16px;
+      padding: 20px;
+      width: 100%;
+      max-width: 480px;
+      color: #f0f0f0;
+      backdrop-filter: blur(12px);
+      transform: translateY(120%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #quiz-overlay.active .quiz-card { transform: translateY(0); }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .quiz-location-name {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #e25822;
+    }
+    .quiz-score {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    #quiz-question {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+      margin: 0 0 16px;
+    }
+
+    #quiz-options {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .quiz-option {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: #f0f0f0;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .quiz-option:hover { background: rgba(226,88,34,0.18); border-color: #e25822; }
+    .quiz-option.correct { background: rgba(76,175,80,0.25); border-color: #4caf50; color: #a5d6a7; }
+    .quiz-option.wrong   { background: rgba(229,57,53,0.25); border-color: #e53935; color: #ef9a9a; }
+    .quiz-option:disabled { pointer-events: none; }
+
+    #quiz-feedback {
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: rgba(255,255,255,0.05);
+      border-left: 3px solid #e25822;
+    }
+
+    .quiz-related-heading {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #888;
+      margin: 10px 0 6px;
+    }
+    #quiz-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .topic-chip {
+      background: rgba(226,88,34,0.15);
+      border: 1px solid rgba(226,88,34,0.4);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 12px;
+      color: #e2a07a;
+    }
+
+    .quiz-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .quiz-btn {
+      flex: 1;
+      padding: 11px 0;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .quiz-btn:hover { opacity: 0.85; }
+    #quiz-next  { background: #e25822; color: #fff; }
+    #quiz-close { background: rgba(255,255,255,0.1); color: #f0f0f0; flex: 0 0 auto; padding: 11px 18px; }
+  </style>
 </head>
 <body>
   <div id="permission-screen">
@@ -21,6 +145,32 @@
     <div id="loader" class="hidden">
       <div class="spinner"></div>
       <p>Finding your location…</p>
+    </div>
+  </div>
+
+  <!-- Quiz overlay — driven by QuizEngine when user enters a POI radius -->
+  <div id="quiz-overlay" role="dialog" aria-modal="true" aria-label="Sustainability Quiz">
+    <div class="quiz-card">
+      <div class="quiz-header">
+        <span class="quiz-location-name" id="quiz-location-name"></span>
+        <span class="quiz-score" id="quiz-score">Score: 0 / 0</span>
+      </div>
+
+      <p id="quiz-question"></p>
+
+      <div id="quiz-options"></div>
+
+      <div id="quiz-feedback" class="hidden"></div>
+
+      <div id="quiz-related-section" class="hidden">
+        <p class="quiz-related-heading">Related topics</p>
+        <div id="quiz-topics"></div>
+      </div>
+
+      <div class="quiz-actions">
+        <button id="quiz-next"  class="quiz-btn hidden">Next →</button>
+        <button id="quiz-close" class="quiz-btn">✕ Close</button>
+      </div>
     </div>
   </div>
 
