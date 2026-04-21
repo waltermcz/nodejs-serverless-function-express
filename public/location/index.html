@@ -130,6 +130,129 @@
     .quiz-btn:hover { opacity: 0.85; }
     #quiz-next  { background: #e25822; color: #fff; }
     #quiz-close { background: rgba(255,255,255,0.1); color: #f0f0f0; flex: 0 0 auto; padding: 11px 18px; }
+
+    /* ── Progress HUD ──────────────────────────────────────────────────────── */
+    /* Persistent badge — always visible once AR loads. Reads from ScoreTracker */
+    #progress-hud {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 10000;
+      background: rgba(10,10,10,0.82);
+      border: 1px solid rgba(226,88,34,0.5);
+      border-radius: 12px;
+      padding: 8px 12px;
+      color: #f0f0f0;
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+      display: none;            /* shown by scene.js after engines init */
+    }
+    #progress-hud.visible { display: block; }
+    .hud-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #e25822;
+      margin-bottom: 6px;
+    }
+    .hud-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .hud-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .hud-dot.done {
+      background: #4caf50;
+      border-color: #4caf50;
+    }
+    .hud-count {
+      font-size: 12px;
+      color: #aaa;
+      margin-left: 4px;
+    }
+
+    /* ── Summary panel ─────────────────────────────────────────────────────── */
+    /* Slides up from bottom when all locations are completed */
+    #summary-panel {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px;
+      z-index: 10002;
+      pointer-events: none;
+    }
+    #summary-panel.active { pointer-events: all; }
+
+    .summary-card {
+      background: rgba(10,10,10,0.95);
+      border: 1px solid #4caf50;
+      border-radius: 16px;
+      padding: 24px 20px 20px;
+      width: 100%;
+      max-width: 480px;
+      color: #f0f0f0;
+      backdrop-filter: blur(12px);
+      transform: translateY(120%);
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #summary-panel.active .summary-card { transform: translateY(0); }
+
+    .summary-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #4caf50;
+      margin-bottom: 4px;
+    }
+    .summary-subtitle {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+    .summary-total {
+      font-size: 28px;
+      font-weight: 800;
+      text-align: center;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .summary-total-label {
+      font-size: 12px;
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+    .summary-rows {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    .summary-row-label { color: #ccc; }
+    .summary-row-score { color: #4caf50; font-weight: 700; }
+    .summary-row-score.partial { color: #ffa726; }
+    .summary-actions {
+      display: flex;
+      gap: 8px;
+    }
+    #summary-close  { background: #4caf50; color: #fff; flex: 1; }
+    #summary-reset  { background: rgba(255,255,255,0.08); color: #aaa; flex: 0 0 auto; padding: 11px 16px; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -145,6 +268,30 @@
     <div id="loader" class="hidden">
       <div class="spinner"></div>
       <p>Finding your location…</p>
+    </div>
+  </div>
+
+  <!-- Progress HUD — persistent top-right badge, updated by ScoreTracker reads -->
+  <div id="progress-hud" aria-live="polite" aria-label="Quiz progress">
+    <div class="hud-label">Progress</div>
+    <div class="hud-dots">
+      <!-- dots injected by scene.js once locations are known -->
+      <span class="hud-count" id="hud-count">0 / 0</span>
+    </div>
+  </div>
+
+  <!-- Summary panel — slides up when all locations are completed -->
+  <div id="summary-panel" role="dialog" aria-modal="true" aria-label="Campus tour summary">
+    <div class="summary-card">
+      <div class="summary-title">Campus Tour Complete!</div>
+      <div class="summary-subtitle">You visited and quizzed every sustainability location.</div>
+      <div class="summary-total" id="summary-total-score">—</div>
+      <div class="summary-total-label">Overall score</div>
+      <div class="summary-rows" id="summary-rows"></div>
+      <div class="summary-actions">
+        <button id="summary-close" class="quiz-btn">Done</button>
+        <button id="summary-reset" class="quiz-btn">Reset</button>
+      </div>
     </div>
   </div>
 

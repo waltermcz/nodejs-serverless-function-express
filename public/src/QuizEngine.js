@@ -31,9 +31,12 @@
 export class QuizEngine {
   /**
    * @param {Array<{locationId:string, questions:Question[], topic:string}>} quizData
-   *   Typically the parsed contents of quiz.json
+   *   Parsed contents of quiz.json
+   * @param {Array<[string,string]>} topicEdges
+   *   Edge list from topics.json — keeps graph data in the data layer, not here
    */
-  constructor(quizData = []) {
+  constructor(quizData = [], topicEdges = []) {
+    this._topicEdges = topicEdges;
     // Primary lookup: locationId → questions array
     this._db = new Map();
 
@@ -49,8 +52,8 @@ export class QuizEngine {
       this._answered.set(entry.locationId, new Set());
     }
 
-    // Build topic graph once at construction time
-    this._topicGraph = this._buildTopicGraph(quizData);
+    // Build topic graph once at construction time using external edge list
+    this._topicGraph = this._buildTopicGraph(quizData, topicEdges);
   }
 
   // ── Question access ───────────────────────────────────────────────────────
@@ -198,7 +201,7 @@ export class QuizEngine {
    * The graph is an undirected (bidirectional) Map<topic, topic[]>.
    * Construction is O(V + E).
    */
-  _buildTopicGraph(quizData) {
+  _buildTopicGraph(quizData, topicEdges = []) {
     const graph = new Map();
 
     const addEdge = (a, b) => {
@@ -208,35 +211,10 @@ export class QuizEngine {
       if (!graph.get(b).includes(a)) graph.get(b).push(a);
     };
 
-    // Campus sustainability knowledge graph
-    // (Each edge represents a conceptual link between two topics)
-    const edges = [
-      ['solar-energy',      'renewable-energy'],
-      ['solar-energy',      'carbon-offset'],
-      ['renewable-energy',  'ev-charging'],
-      ['renewable-energy',  'climate-change'],
-      ['carbon-offset',     'climate-change'],
-      ['carbon-offset',     'greenhouse-gas'],
-      ['climate-change',    'greenhouse-gas'],
-      ['recycling',         'waste-reduction'],
-      ['recycling',         'circular-economy'],
-      ['waste-reduction',   'circular-economy'],
-      ['waste-reduction',   'composting'],
-      ['circular-economy',  'food-systems'],
-      ['ev-charging',       'electric-vehicles'],
-      ['ev-charging',       'clean-air'],
-      ['electric-vehicles', 'clean-air'],
-      ['electric-vehicles', 'renewable-energy'],
-      ['campus-garden',     'food-systems'],
-      ['campus-garden',     'composting'],
-      ['food-systems',      'composting'],
-      ['food-systems',      'circular-economy'],
-      ['greenhouse-gas',    'clean-air'],
-    ];
+    // Load edges from the data layer (topics.json) instead of hardcoding them
+    for (const [a, b] of topicEdges) addEdge(a, b);
 
-    for (const [a, b] of edges) addEdge(a, b);
-
-    // Also link any topics extracted from the quiz data itself
+    // Also link topics extracted from the quiz data itself
     for (const entry of quizData) {
       const topics = [...new Set(entry.questions.map(q => q.topic).filter(Boolean))];
       for (let i = 0; i < topics.length - 1; i++) {
