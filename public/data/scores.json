@@ -1,0 +1,26 @@
+{
+  "_comment": "Score schema — defines the shape of a persisted score record. Actual records are written to localStorage by ScoreTracker.js (engine layer). This file acts as the contract between the data layer and the persistence engine.",
+  "schema": {
+    "locationId": "string — matches id field in locations.json",
+    "correct":    "number — questions answered correctly",
+    "total":      "number — questions attempted",
+    "percent":    "number — correct / total * 100",
+    "completedAt":"string — ISO 8601 timestamp of last answer"
+  },
+  "example": [
+    {
+      "locationId":   "solar-panels",
+      "correct":      3,
+      "total":        3,
+      "percent":      100,
+      "completedAt":  "2026-04-10T14:32:00.000Z"
+    },
+    {
+      "locationId":   "recycling-center",
+      "correct":      2,
+      "total":        3,
+      "percent":      67,
+      "completedAt":  "2026-04-10T14:45:00.000Z"
+    }
+  ]
+}

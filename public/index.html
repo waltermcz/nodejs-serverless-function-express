@@ -55,6 +55,30 @@
       border-color: #e25822;
     }
 
+    .experience-card--soon {
+      opacity: 0.5;
+      cursor: default;
+      position: relative;
+    }
+
+    .experience-card--soon:hover {
+      border-color: #2e2e2e;
+    }
+
+    .soon-badge {
+      display: inline-block;
+      margin-top: 0.25rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: rgba(226, 88, 34, 0.15);
+      border: 1px solid rgba(226, 88, 34, 0.35);
+      color: #e25822;
+    }
+
     .experience-card h2 {
       font-size: 1.1rem;
       font-weight: 600;
@@ -83,6 +107,17 @@
         <h2>Campus Location AR</h2>
         <p>Walk around campus and discover AR content anchored to real locations.</p>
       </a>
+
+      <a href="phenology/index.html" class="experience-card">
+        <h2>Phenology Walk</h2>
+        <p>See Central Park's seasonal future — today on the left, 2050 on the right.</p>
+      </a>
+
+      <div class="experience-card experience-card--soon">
+        <h2>Memory Anchors</h2>
+        <p>Leave and discover GPS-anchored memories across campus. Coming soon.</p>
+        <span class="soon-badge">In Progress</span>
+      </div>
     </div>
   </div>
 </body>

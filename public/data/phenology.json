@@ -1,0 +1,234 @@
+{
+  "waypoints": [
+    {
+      "id": "cherry-hill",
+      "label": "Cherry Hill",
+      "lat": 40.7740,
+      "lng": -73.9706,
+      "proximityThreshold": 30,
+      "overlayType": "cherry-blossoms",
+      "color": "#ffb7c5",
+      "species": [
+        {
+          "id": "yoshino-cherry",
+          "name": "Yoshino Cherry",
+          "scientificName": "Prunus × yedoensis",
+          "type": "tree",
+          "events": [
+            {
+              "name": "First bloom",
+              "historicDate": "Apr 2",
+              "historicDOY": 92,
+              "projected2050Date": "Mar 19",
+              "projected2050DOY": 78,
+              "shiftDays": -14
+            },
+            {
+              "name": "Peak bloom",
+              "historicDate": "Apr 8",
+              "historicDOY": 98,
+              "projected2050Date": "Mar 25",
+              "projected2050DOY": 84,
+              "shiftDays": -14
+            },
+            {
+              "name": "Last petal",
+              "historicDate": "Apr 20",
+              "historicDOY": 110,
+              "projected2050Date": "Apr 6",
+              "projected2050DOY": 96,
+              "shiftDays": -14
+            }
+          ],
+          "note": "Cherry Hill's namesake trees have been tracked since 1926. Bloom timing is shifting earlier by roughly 1 day per year — driven entirely by warming winters."
+        }
+      ]
+    },
+    {
+      "id": "the-mall",
+      "label": "The Mall",
+      "lat": 40.7707,
+      "lng": -73.9733,
+      "proximityThreshold": 35,
+      "overlayType": "elm-canopy",
+      "color": "#7bc67e",
+      "species": [
+        {
+          "id": "american-elm",
+          "name": "American Elm",
+          "scientificName": "Ulmus americana",
+          "type": "tree",
+          "events": [
+            {
+              "name": "Bud break",
+              "historicDate": "Mar 25",
+              "historicDOY": 84,
+              "projected2050Date": "Mar 11",
+              "projected2050DOY": 70,
+              "shiftDays": -14
+            },
+            {
+              "name": "Full leaf-out",
+              "historicDate": "Apr 18",
+              "historicDOY": 108,
+              "projected2050Date": "Apr 4",
+              "projected2050DOY": 94,
+              "shiftDays": -14
+            },
+            {
+              "name": "Leaf color change",
+              "historicDate": "Oct 15",
+              "historicDOY": 288,
+              "projected2050Date": "Oct 28",
+              "projected2050DOY": 301,
+              "shiftDays": 13
+            },
+            {
+              "name": "Leaf drop",
+              "historicDate": "Nov 5",
+              "historicDOY": 309,
+              "projected2050Date": "Nov 19",
+              "projected2050DOY": 323,
+              "shiftDays": 14
+            }
+          ],
+          "note": "Over 1,700 American elms form one of the last great elm canopies in North America. By 2050, the canopy will be fully leafed out two weeks earlier — reshaping the entire spring experience of The Mall."
+        }
+      ]
+    },
+    {
+      "id": "the-ramble",
+      "label": "The Ramble",
+      "lat": 40.7771,
+      "lng": -73.9709,
+      "proximityThreshold": 40,
+      "overlayType": "wildflowers",
+      "color": "#ffd54f",
+      "species": [
+        {
+          "id": "trout-lily",
+          "name": "Trout Lily",
+          "scientificName": "Erythronium americanum",
+          "type": "wildflower",
+          "events": [
+            {
+              "name": "First bloom",
+              "historicDate": "Apr 10",
+              "historicDOY": 100,
+              "projected2050Date": "Mar 27",
+              "projected2050DOY": 86,
+              "shiftDays": -14
+            },
+            {
+              "name": "Peak bloom",
+              "historicDate": "Apr 18",
+              "historicDOY": 108,
+              "projected2050Date": "Apr 4",
+              "projected2050DOY": 94,
+              "shiftDays": -14
+            }
+          ],
+          "note": "One of the first wildflowers to emerge in The Ramble each spring and a key early food source for pollinators. Its early bloom is increasingly out of sync with the insects that depend on it."
+        },
+        {
+          "id": "spring-beauty",
+          "name": "Spring Beauty",
+          "scientificName": "Claytonia virginica",
+          "type": "wildflower",
+          "events": [
+            {
+              "name": "First bloom",
+              "historicDate": "Apr 5",
+              "historicDOY": 95,
+              "projected2050Date": "Mar 22",
+              "projected2050DOY": 81,
+              "shiftDays": -14
+            },
+            {
+              "name": "Last bloom",
+              "historicDate": "May 10",
+              "historicDOY": 130,
+              "projected2050Date": "Apr 26",
+              "projected2050DOY": 116,
+              "shiftDays": -14
+            }
+          ],
+          "note": "One of Central Park's most beloved spring ephemerals — present for only a few weeks, then gone entirely until next year."
+        }
+      ]
+    },
+    {
+      "id": "conservatory-garden",
+      "label": "Conservatory Garden",
+      "lat": 40.7951,
+      "lng": -73.9526,
+      "proximityThreshold": 30,
+      "overlayType": "garden-blooms",
+      "color": "#ce93d8",
+      "species": [
+        {
+          "id": "tulip",
+          "name": "Tulip",
+          "scientificName": "Tulipa gesneriana",
+          "type": "bulb",
+          "events": [
+            {
+              "name": "First bloom",
+              "historicDate": "Apr 15",
+              "historicDOY": 105,
+              "projected2050Date": "Apr 1",
+              "projected2050DOY": 91,
+              "shiftDays": -14
+            },
+            {
+              "name": "Peak bloom",
+              "historicDate": "Apr 28",
+              "historicDOY": 118,
+              "projected2050Date": "Apr 14",
+              "projected2050DOY": 104,
+              "shiftDays": -14
+            },
+            {
+              "name": "Last bloom",
+              "historicDate": "May 12",
+              "historicDOY": 132,
+              "projected2050Date": "Apr 28",
+              "projected2050DOY": 118,
+              "shiftDays": -14
+            }
+          ],
+          "note": "The Conservatory plants 20,000 tulip bulbs each fall. Bloom timing has shifted 3 weeks earlier since the 1970s, compressing the window visitors have to see them at peak."
+        }
+      ]
+    }
+  ],
+  "seasonalFilters": {
+    "present": {
+      "winter": "saturate(0.35) brightness(0.82) hue-rotate(195deg)",
+      "spring": "saturate(1.25) brightness(1.06) hue-rotate(-8deg)",
+      "summer": "saturate(1.1)  brightness(1.0)",
+      "fall":   "saturate(1.3)  brightness(0.94) hue-rotate(18deg) sepia(0.12)"
+    },
+    "future": {
+      "winter": "saturate(0.65) brightness(0.9)  hue-rotate(120deg)",
+      "spring": "saturate(1.6)  brightness(1.1)  hue-rotate(-14deg)",
+      "summer": "saturate(0.82) brightness(1.14) sepia(0.28)",
+      "fall":   "saturate(0.75) brightness(0.87) hue-rotate(28deg) sepia(0.22)"
+    }
+  },
+  "climateData": {
+    "location": "Central Park, New York City",
+    "baseline": "1991–2020",
+    "projection": "2050 RCP 4.5",
+    "avgTempRiseFahrenheit": 3.2,
+    "springPhenologyShiftDays": -14,
+    "fallPhenologyShiftDays": 14,
+    "growingSeasonExtensionDays": 32,
+    "sources": [
+      "NOAA Northeast Regional Climate Center",
+      "NYC Climate Change Science Clearinghouse",
+      "Central Park Conservancy Nature Notes",
+      "USA National Phenology Network (USANPN)"
+    ]
+  }
+}

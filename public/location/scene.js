@@ -6,9 +6,11 @@
  *   AssetLoader    — priority queue for progressive 3D asset loading
  *   QuizEngine     — JSON-backed quiz with BFS topic graph
  */
-import { SceneSelector } from '../src/SceneSelector.js';
-import { AssetLoader }   from '../src/AssetLoader.js';
-import { QuizEngine }    from '../src/QuizEngine.js';
+import { SceneSelector }    from '../src/SceneSelector.js';
+import { AssetLoader }      from '../src/AssetLoader.js';
+import { QuizEngine }       from '../src/QuizEngine.js';
+import { ProximityManager } from '../src/ProximityManager.js';
+import { ScoreTracker }     from '../src/ScoreTracker.js';
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
 
@@ -19,18 +21,17 @@ const startBtn         = document.getElementById('start-btn');
 
 // ── Engine instances (initialised after data loads) ───────────────────────────
 
-let sceneSelector = null;   // SceneSelector instance
-let assetLoader   = null;   // AssetLoader instance
-let quizEngine    = null;   // QuizEngine instance
-
-// ── Proximity threshold for quiz trigger (metres) ─────────────────────────────
-const QUIZ_TRIGGER_RADIUS = 20;
+let sceneSelector    = null;   // SceneSelector instance
+let assetLoader      = null;   // AssetLoader instance
+let quizEngine       = null;   // QuizEngine instance
+let proximityManager = null;   // ProximityManager instance
 
 // ── Active quiz state ─────────────────────────────────────────────────────────
 const quizState = {
-  locationId:    null,
-  questionIndex: 0,
-  active:        false,
+  locationId:        null,
+  questionIndex:     0,
+  active:            false,
+  dismissedLocations: new Set(), // locations the user has manually closed — never auto-reopen
 };
 
 // ── Permissions ───────────────────────────────────────────────────────────────
@@ -112,33 +113,20 @@ async function loadQuizData() {
   return res.json();
 }
 
+async function loadTopics() {
+  const res = await fetch('../data/topics.json');
+  const data = await res.json();
+  return data.edges;  // QuizEngine only needs the edge list
+}
+
 async function loadAssetManifest() {
   const res = await fetch('../data/assets.json');
   return res.json();
 }
 
-// ── Distance helpers ──────────────────────────────────────────────────────────
-
-/**
- * Haversine formula — great-circle distance in metres.
- */
-function haversineDistance(lat1, lng1, lat2, lng2) {
-  const R = 6371000;
-  const toRad = (deg) => deg * (Math.PI / 180);
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLng / 2) * Math.sin(dLng / 2);
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-function formatDistance(metres) {
-  return metres < 1000
-    ? `${Math.round(metres)}m away`
-    : `${(metres / 1000).toFixed(1)}km away`;
-}
+// Distance helpers are provided by ProximityManager as static methods:
+//   ProximityManager.distanceTo(lat1, lng1, lat2, lng2) → metres
+//   ProximityManager.formatDistance(metres)             → string
 
 // ── Scene building ────────────────────────────────────────────────────────────
 
@@ -154,87 +142,33 @@ function buildLocationEntities(locations) {
         scale="${loc.scale}"
         opacity="0.85"
         animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear"
+        class="clickable"
+        data-location-id="${loc.id}"
+        data-location-label="${loc.label}"
       ></a-box>
       <a-text
         id="label-${loc.id}"
-        value="${loc.label}\nLocating..."
+        value="${loc.label}\nTap to quiz"
         align="center"
         color="#ffffff"
         position="0 20 0"
         scale="30 30 30"
         wrap-count="20"
+        class="clickable"
+        data-location-id="${loc.id}"
+        data-location-label="${loc.label}"
       ></a-text>
     </a-entity>
   `).join('');
 }
 
 // ── Live GPS tracking + proximity quiz trigger ────────────────────────────────
-
-let watchId = null;
-
-function startTracking(locations) {
-  if (!navigator.geolocation) {
-    console.warn('[location] Geolocation not supported');
-    return;
-  }
-
-  watchId = navigator.geolocation.watchPosition(
-    (position) => {
-      const userLat = position.coords.latitude;
-      const userLng = position.coords.longitude;
-      dbg(`GPS: ${userLat.toFixed(5)}, ${userLng.toFixed(5)}`);
-
-      // Use SceneSelector to find the nearest POI in O(n) — then do O(1)
-      // lookups per-location for label updates.
-      const nearestResult = sceneSelector.getNearest(userLat, userLng);
-
-      locations.forEach(loc => {
-        const distanceMetres = haversineDistance(userLat, userLng, loc.lat, loc.lng);
-        dbg(`${loc.label}: ${Math.round(distanceMetres)}m`);
-
-        const el = document.querySelector(`#loc-${loc.id}`);
-        if (el && el.object3D) {
-          const p = el.object3D.position;
-          dbg(`  3D pos: ${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}`);
-        }
-
-        const label = document.querySelector(`#label-${loc.id}`);
-        if (label) {
-          label.setAttribute('value', `${loc.label}\n${formatDistance(distanceMetres)}`);
-        }
-      });
-
-      // ── Quiz trigger ────────────────────────────────────────────────────────
-      // When the nearest POI is within QUIZ_TRIGGER_RADIUS metres and the quiz
-      // is not already open, open it. SceneSelector.select() is O(1).
-      if (
-        nearestResult &&
-        nearestResult.distanceMetres <= QUIZ_TRIGGER_RADIUS &&
-        !quizState.active
-      ) {
-        const locationConfig = sceneSelector.select(nearestResult.location.id);
-        if (locationConfig && quizEngine.questionCount(locationConfig.id) > 0) {
-          openQuiz(locationConfig.id, locationConfig.label);
-        }
-      }
-    },
-    (err) => {
-      dbg(`GPS error: ${err.code} ${err.message}`);
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 2000,
-      timeout: 10000,
-    }
-  );
-}
-
-function stopTracking() {
-  if (watchId !== null) {
-    navigator.geolocation.clearWatch(watchId);
-    watchId = null;
-  }
-}
+// Handled by ProximityManager. Initialised in initScene() once locations load.
+//
+// onEnter  — fires when user crosses into a location's proximityThreshold.
+//            Each location carries its own threshold (metres) from locations.json
+//            instead of the old global QUIZ_TRIGGER_RADIUS constant.
+// onPosition — fires on every GPS update; used to refresh AR distance labels.
 
 // ── Quiz UI ───────────────────────────────────────────────────────────────────
 
@@ -260,6 +194,10 @@ function openQuiz(locationId, locationLabel) {
 }
 
 function closeQuiz() {
+  // Mark this location as dismissed so the proximity trigger won't reopen it
+  if (quizState.locationId) {
+    quizState.dismissedLocations.add(quizState.locationId);
+  }
   quizState.active = false;
   quizOverlay.classList.remove('active');
 }
@@ -269,8 +207,23 @@ function renderQuestion() {
   const question = quizEngine.getQuestion(locationId, questionIndex);
 
   if (!question) {
-    // All questions answered — show final score
+    // All questions answered — persist score and show final result
     const score = quizEngine.getScore(locationId);
+    ScoreTracker.save(locationId, score);   // persist to localStorage
+    dbg(`Score saved: ${locationId} ${score.correct}/${score.total}`);
+    renderProgressHUD(_summaryLocations);
+    checkAllComplete(_summaryLocations);
+
+    // Submit to API Layer — fire-and-forget, does not block the UI
+    fetch('/api/scores', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ locationId, correct: score.correct, total: score.total }),
+    })
+      .then(r => r.json())
+      .then(data => dbg(`API score: ${data.grade} — ${data.badge}`))
+      .catch(err => dbg(`API score submit failed: ${err.message}`));
+
     quizQuestionEl.textContent = `Quiz complete! You scored ${score.correct} / ${score.total} (${score.percent}%)`;
     quizOptionsEl.innerHTML    = '';
     quizFeedbackEl.classList.add('hidden');
@@ -353,6 +306,94 @@ function formatTopic(topic) {
   return topic.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
+// ── Client Layer: Progress HUD ────────────────────────────────────────────────
+
+const progressHud  = document.getElementById('progress-hud');
+const hudDotsEl    = progressHud.querySelector('.hud-dots');
+
+/**
+ * Rebuild the HUD dots and count from localStorage via ScoreTracker.
+ * Called once on init (restores prior session) and after every quiz save.
+ * O(n) where n = location count.
+ *
+ * @param {Array<{id:string, label:string}>} locations
+ */
+function renderProgressHUD(locations) {
+  const completedCount = locations.filter(loc => ScoreTracker.isCompleted(loc.id)).length;
+
+  // Rebuild dot nodes — one coloured dot per location
+  hudDotsEl.innerHTML = locations.map(loc => {
+    const done = ScoreTracker.isCompleted(loc.id);
+    return `<span class="hud-dot${done ? ' done' : ''}" title="${loc.label}"></span>`;
+  }).join('');
+
+  // Re-append the count span (innerHTML nuked it)
+  const count = document.createElement('span');
+  count.className  = 'hud-count';
+  count.id         = 'hud-count';
+  count.textContent = `${completedCount} / ${locations.length}`;
+  hudDotsEl.appendChild(count);
+
+  progressHud.classList.add('visible');
+}
+
+// ── Client Layer: Summary Panel ───────────────────────────────────────────────
+
+const summaryPanel      = document.getElementById('summary-panel');
+const summaryTotalEl    = document.getElementById('summary-total-score');
+const summaryRowsEl     = document.getElementById('summary-rows');
+const summaryCloseBtn   = document.getElementById('summary-close');
+const summaryResetBtn   = document.getElementById('summary-reset');
+
+let _summaryLocations = []; // set in initScene so reset can re-render HUD
+
+/**
+ * If every location has a saved score, open the summary panel.
+ * Called after each quiz save. O(n).
+ *
+ * @param {Array<{id:string, label:string}>} locations
+ */
+function checkAllComplete(locations) {
+  const allDone = locations.every(loc => ScoreTracker.isCompleted(loc.id));
+  if (allDone) openSummaryPanel(locations);
+}
+
+/**
+ * Populate and slide up the summary panel. O(n).
+ * @param {Array<{id:string, label:string}>} locations
+ */
+function openSummaryPanel(locations) {
+  const totals = ScoreTracker.getTotals();
+
+  // Headline score
+  summaryTotalEl.textContent = `${totals.correct} / ${totals.total} (${totals.percent}%)`;
+
+  // Per-location rows
+  summaryRowsEl.innerHTML = locations.map(loc => {
+    const record = ScoreTracker.load(loc.id);
+    if (!record) return '';
+    const scoreClass = record.percent === 100 ? '' : ' partial';
+    return `
+      <div class="summary-row">
+        <span class="summary-row-label">${loc.label}</span>
+        <span class="summary-row-score${scoreClass}">${record.correct} / ${record.total} (${record.percent}%)</span>
+      </div>`;
+  }).join('');
+
+  summaryPanel.classList.add('active');
+}
+
+summaryCloseBtn.addEventListener('click', () => {
+  summaryPanel.classList.remove('active');
+});
+
+summaryResetBtn.addEventListener('click', () => {
+  ScoreTracker.clear();
+  dbg('Progress reset');
+  summaryPanel.classList.remove('active');
+  renderProgressHUD(_summaryLocations);
+});
+
 // ── Debug overlay ─────────────────────────────────────────────────────────────
 
 const debugEl = document.createElement('div');
@@ -391,6 +432,26 @@ function dbg(msg) {
   debugEl.prepend(line);
 }
 
+// ── POI tap-to-quiz ───────────────────────────────────────────────────────────
+
+/**
+ * After the A-Frame scene loads, attach click/tap listeners to every POI box
+ * and label. Tapping any POI opens its quiz immediately — no GPS proximity needed.
+ * This makes the quiz accessible from any location, including during demos.
+ */
+function attachPOIClickHandlers() {
+  document.querySelectorAll('[data-location-id]').forEach(el => {
+    el.addEventListener('click', () => {
+      const locationId    = el.getAttribute('data-location-id');
+      const locationLabel = el.getAttribute('data-location-label');
+      if (locationId && locationLabel && !quizState.active) {
+        dbg(`POI tapped: ${locationId}`);
+        openQuiz(locationId, locationLabel);
+      }
+    });
+  });
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 async function initScene() {
@@ -401,21 +462,28 @@ async function initScene() {
   showLoader();
 
   // Load all data sources in parallel
-  const [locations, quizData, assetManifest] = await Promise.all([
+  const [locations, quizData, topicEdges, assetManifest] = await Promise.all([
     loadLocations(),
     loadQuizData(),
+    loadTopics(),
     loadAssetManifest(),
   ]);
   dbg(`Loaded ${locations.length} locations, ${quizData.length} quiz sets`);
 
   // ── Initialise engines ──────────────────────────────────────────────────────
 
+  // Store locations for progress HUD and summary panel (both need the full list)
+  _summaryLocations = locations;
+
   // SceneSelector: build hash map from location array — O(n) construction
   sceneSelector = new SceneSelector(locations);
   dbg(`SceneSelector ready — ${sceneSelector.size} locations indexed`);
 
+  // Render HUD immediately — restores any saved progress from a prior session
+  renderProgressHUD(locations);
+
   // QuizEngine: build DB + topic graph — O(V+E) construction
-  quizEngine = new QuizEngine(quizData);
+  quizEngine = new QuizEngine(quizData, topicEdges);
   dbg('QuizEngine ready — topic graph built');
 
   // AssetLoader: enqueue all assets by priority, begin background loading
@@ -443,16 +511,50 @@ async function initScene() {
   dbg('Scene injected');
 
   const scene = arContainer.querySelector('a-scene');
+  // ── ProximityManager ────────────────────────────────────────────────────
+  // Replaces the inline startTracking / stopTracking + haversine code.
+  // Each location's proximityThreshold (from locations.json) is used
+  // instead of the old global QUIZ_TRIGGER_RADIUS = 20 constant.
+  proximityManager = new ProximityManager(locations, {
+
+    // Fires when the user walks into a location's radius — trigger quiz
+    onEnter({ location }) {
+      dbg(`Entered proximity: ${location.id} (threshold ${location.proximityThreshold}m)`);
+      if (!quizState.active && !quizState.dismissedLocations.has(location.id)) {
+        const config = sceneSelector.select(location.id);  // O(1) hash map lookup
+        if (config && quizEngine.questionCount(config.id) > 0) {
+          openQuiz(config.id, config.label);
+        }
+      }
+    },
+
+    // Fires on every GPS update — refresh the distance label on each AR marker
+    onPosition({ distances }) {
+      for (const { location, distanceMetres } of distances) {
+        dbg(`${location.label}: ${Math.round(distanceMetres)}m`);
+        const label = document.querySelector(`#label-${location.id}`);
+        if (label) {
+          const visited = ScoreTracker.isCompleted(location.id) ? ' ✓' : '';
+          label.setAttribute(
+            'value',
+            `${location.label}${visited}\n${ProximityManager.formatDistance(distanceMetres)}\nTap to quiz`
+          );
+        }
+      }
+    },
+  });
+
   scene.addEventListener('loaded', () => {
     dbg('Scene loaded');
     dbg(`gps-camera registered: ${AFRAME.components['gps-camera'] !== undefined}`);
     dbg(`gps-entity-place registered: ${AFRAME.components['gps-entity-place'] !== undefined}`);
     hideLoader();
-    startTracking(locations);
+    proximityManager.start();
+    attachPOIClickHandlers();
   });
 
   scene.addEventListener('error', (e) => dbg(`Scene error: ${e.detail}`));
-  window.addEventListener('beforeunload', stopTracking);
+  window.addEventListener('beforeunload', () => proximityManager.stop());
 }
 
 initScene();

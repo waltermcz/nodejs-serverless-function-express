@@ -1,0 +1,40 @@
+{
+  "edges": [
+    ["solar-energy",      "renewable-energy"],
+    ["solar-energy",      "carbon-offset"],
+    ["renewable-energy",  "ev-charging"],
+    ["renewable-energy",  "climate-change"],
+    ["carbon-offset",     "climate-change"],
+    ["carbon-offset",     "greenhouse-gas"],
+    ["climate-change",    "greenhouse-gas"],
+    ["recycling",         "waste-reduction"],
+    ["recycling",         "circular-economy"],
+    ["waste-reduction",   "circular-economy"],
+    ["waste-reduction",   "composting"],
+    ["circular-economy",  "food-systems"],
+    ["ev-charging",       "electric-vehicles"],
+    ["ev-charging",       "clean-air"],
+    ["electric-vehicles", "clean-air"],
+    ["electric-vehicles", "renewable-energy"],
+    ["campus-garden",     "food-systems"],
+    ["campus-garden",     "composting"],
+    ["food-systems",      "composting"],
+    ["food-systems",      "circular-economy"],
+    ["greenhouse-gas",    "clean-air"]
+  ],
+  "descriptions": {
+    "solar-energy":      "Energy captured directly from sunlight via photovoltaic cells",
+    "renewable-energy":  "Energy from sources that naturally replenish — sun, wind, water",
+    "carbon-offset":     "Reducing or removing CO2 to compensate for emissions elsewhere",
+    "climate-change":    "Long-term shifts in global temperatures driven by greenhouse gases",
+    "greenhouse-gas":    "Gases that trap heat in the atmosphere (CO2, methane, N2O)",
+    "recycling":         "Processing used materials into new products to reduce waste",
+    "waste-reduction":   "Strategies to minimize the volume of waste produced",
+    "circular-economy":  "An economic model where resources are reused, not discarded",
+    "composting":        "Decomposing organic matter into nutrient-rich soil amendment",
+    "food-systems":      "The full chain of growing, processing, distributing, and eating food",
+    "ev-charging":       "Supplying electric energy to recharge electric vehicle batteries",
+    "electric-vehicles": "Vehicles powered by electric motors rather than combustion engines",
+    "clean-air":         "Reducing pollutants that harm human health and ecosystems"
+  }
+}
