@@ -6,123 +6,302 @@
   <title>Campus Sustainability AR</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
+    /* ── Override global body for the home screen ───────────── */
+    body {
+      height: auto;
+      min-height: 100dvh;
+      overflow-y: auto;
+      background: #07090d;
+    }
+
+    /* ── Ambient background blobs ───────────────────────────── */
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Warm orange blob — top right */
+    body::before {
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(226,88,34,0.22) 0%, transparent 70%);
+      top: -180px;
+      right: -160px;
+      animation: blob-a 14s ease-in-out infinite alternate;
+    }
+
+    /* Cool green blob — bottom left */
+    body::after {
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, rgba(34,120,60,0.18) 0%, transparent 70%);
+      bottom: -160px;
+      left: -140px;
+      animation: blob-b 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes blob-a {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(-50px, 70px) scale(1.12); }
+    }
+    @keyframes blob-b {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(50px, -50px) scale(1.1); }
+    }
+
+    /* ── Page layout ────────────────────────────────────────── */
     .home-screen {
+      position: relative;
+      z-index: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100dvh;
-      padding: 1.5rem;
-      gap: 1.5rem;
+      min-height: 100dvh;
+      padding: 3.5rem 1.5rem 2.5rem;
     }
 
-    .home-screen h1 {
-      font-size: 1.6rem;
+    /* ── Header ─────────────────────────────────────────────── */
+    .home-eyebrow {
+      font-size: 0.7rem;
       font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
       color: #e25822;
-      text-align: center;
+      margin-bottom: 1rem;
+      animation: rise 0.5s 0.05s ease both;
     }
 
-    .home-screen p {
-      font-size: 0.95rem;
-      color: #aaa;
+    .home-title {
+      font-size: clamp(1.75rem, 6vw, 2.4rem);
+      font-weight: 800;
+      line-height: 1.15;
       text-align: center;
-      max-width: 320px;
+      background: linear-gradient(140deg, #f5f5f5 40%, #e25822 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.85rem;
+      animation: rise 0.55s 0.15s ease both;
     }
 
+    .home-subtitle {
+      font-size: 0.88rem;
+      color: #555;
+      text-align: center;
+      max-width: 260px;
+      line-height: 1.55;
+      margin-bottom: 2.5rem;
+      animation: rise 0.55s 0.25s ease both;
+    }
+
+    /* ── Cards ──────────────────────────────────────────────── */
     .experience-cards {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.75rem;
       width: 100%;
-      max-width: 360px;
+      max-width: 380px;
     }
 
     .experience-card {
-      background: #1a1a1a;
-      border: 1px solid #2e2e2e;
-      border-radius: 1rem;
-      padding: 1.5rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 1.1rem;
+      padding: 1.1rem 1.3rem;
       text-decoration: none;
       color: #f0f0f0;
       display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      transition: border-color 0.2s;
+      align-items: center;
+      gap: 1rem;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: transform 0.25s ease, border-color 0.25s ease,
+                  box-shadow 0.25s ease, background 0.25s ease;
+      /* entrance animation — filled in per nth-child below */
+      opacity: 0;
+      animation: rise 0.5s ease forwards;
     }
+
+    .experience-card:nth-child(1) { animation-delay: 0.32s; }
+    .experience-card:nth-child(2) { animation-delay: 0.42s; }
+    .experience-card:nth-child(3) { animation-delay: 0.52s; }
+    .experience-card:nth-child(4) { animation-delay: 0.62s; }
+    .experience-card:nth-child(5) { animation-delay: 0.72s; }
 
     .experience-card:hover {
-      border-color: #e25822;
+      transform: translateY(-3px);
+      border-color: rgba(226,88,34,0.45);
+      box-shadow: 0 8px 28px rgba(226,88,34,0.12);
+      background: rgba(226,88,34,0.05);
     }
 
+    /* ── Card icon box ──────────────────────────────────────── */
+    .card-icon {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(226,88,34,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      transition: background 0.25s ease;
+    }
+    .experience-card:hover .card-icon {
+      background: rgba(226,88,34,0.18);
+    }
+
+    /* ── Card text ──────────────────────────────────────────── */
+    .card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .experience-card h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #e8e8e8;
+    }
+
+    .experience-card p {
+      font-size: 0.8rem;
+      color: #555;
+      line-height: 1.45;
+    }
+
+    /* ── Arrow chevron ──────────────────────────────────────── */
+    .card-arrow {
+      flex-shrink: 0;
+      color: #2a2a2a;
+      font-size: 1rem;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+    .experience-card:hover .card-arrow {
+      transform: translateX(4px);
+      color: #e25822;
+    }
+
+    /* ── "Coming soon" card ─────────────────────────────────── */
     .experience-card--soon {
-      opacity: 0.5;
+      animation-name: rise-dim;  /* fades to 0.4 opacity instead of 1 */
       cursor: default;
-      position: relative;
     }
-
     .experience-card--soon:hover {
-      border-color: #2e2e2e;
+      transform: none;
+      border-color: rgba(255,255,255,0.07);
+      box-shadow: none;
+      background: rgba(255,255,255,0.03);
+    }
+    .experience-card--soon:hover .card-icon {
+      background: rgba(226,88,34,0.1);
     }
 
     .soon-badge {
       display: inline-block;
-      margin-top: 0.25rem;
+      margin-top: 4px;
       padding: 2px 8px;
       border-radius: 999px;
-      font-size: 0.7rem;
+      font-size: 0.62rem;
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      background: rgba(226, 88, 34, 0.15);
-      border: 1px solid rgba(226, 88, 34, 0.35);
+      background: rgba(226,88,34,0.12);
+      border: 1px solid rgba(226,88,34,0.28);
       color: #e25822;
+      align-self: flex-start;
     }
 
-    .experience-card h2 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #e25822;
+    /* ── Dev-tool card ──────────────────────────────────────── */
+    .experience-card--dev {
+      border-style: dashed;
+      border-color: rgba(255,255,255,0.05);
+    }
+    .experience-card--dev h2   { color: #444; }
+    .experience-card--dev p    { color: #333; }
+    .experience-card--dev .card-icon { background: rgba(255,255,255,0.03); }
+    .experience-card--dev:hover {
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: none;
+      background: rgba(255,255,255,0.02);
+    }
+    .experience-card--dev:hover .card-icon {
+      background: rgba(255,255,255,0.05);
+    }
+    .experience-card--dev:hover .card-arrow { color: #444; transform: none; }
+
+    /* ── Entrance keyframes ─────────────────────────────────── */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    .experience-card p {
-      font-size: 0.875rem;
-      color: #aaa;
-      text-align: left;
+    @keyframes rise-dim {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 0.4; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
   <div class="home-screen">
-    <h1>Campus Sustainability AR</h1>
-    <p>Choose an experience to explore sustainability on campus.</p>
+
+    <p class="home-eyebrow">🌱 Campus AR</p>
+    <h1 class="home-title">Sustainability<br>in Augmented Reality</h1>
+    <p class="home-subtitle">Explore your campus through an environmental lens.</p>
 
     <div class="experience-cards">
+
       <a href="marker/index.html" class="experience-card">
-        <h2>Marker AR</h2>
-        <p>Point your camera at a printed campus marker to reveal sustainability data.</p>
+        <div class="card-icon">🎯</div>
+        <div class="card-body">
+          <h2>Marker AR</h2>
+          <p>Point your camera at a printed campus marker to reveal sustainability data.</p>
+        </div>
+        <span class="card-arrow">›</span>
       </a>
 
       <a href="location/index.html" class="experience-card">
-        <h2>Campus Location AR</h2>
-        <p>Walk around campus and discover AR content anchored to real locations.</p>
+        <div class="card-icon">📍</div>
+        <div class="card-body">
+          <h2>Campus Location AR</h2>
+          <p>Walk around campus and discover AR content anchored to real locations.</p>
+        </div>
+        <span class="card-arrow">›</span>
       </a>
 
       <a href="phenology/index.html" class="experience-card">
-        <h2>Phenology Walk</h2>
-        <p>See Central Park's seasonal future — today on the left, 2050 on the right.</p>
+        <div class="card-icon">🌿</div>
+        <div class="card-body">
+          <h2>Phenology Walk</h2>
+          <p>See Central Park's seasonal future — today on the left, 2050 on the right.</p>
+        </div>
+        <span class="card-arrow">›</span>
       </a>
 
       <div class="experience-card experience-card--soon">
-        <h2>Memory Anchors</h2>
-        <p>Leave and discover GPS-anchored memories across campus. Coming soon.</p>
-        <span class="soon-badge">In Progress</span>
+        <div class="card-icon">📌</div>
+        <div class="card-body">
+          <h2>Memory Anchors</h2>
+          <p>Leave and discover GPS-anchored memories across campus.</p>
+          <span class="soon-badge">In Progress</span>
+        </div>
       </div>
 
-      <a href="marker-creator/index.html" class="experience-card" style="border-style: dashed;">
-        <h2 style="color:#888;">Marker Creator</h2>
-        <p>Take a photo and generate a new AR marker pattern file for the project.</p>
+      <a href="marker-creator/index.html" class="experience-card experience-card--dev">
+        <div class="card-icon">🛠</div>
+        <div class="card-body">
+          <h2>Marker Creator</h2>
+          <p>Capture a photo and generate a new AR marker pattern file.</p>
+        </div>
+        <span class="card-arrow">›</span>
       </a>
+
     </div>
   </div>
 </body>
