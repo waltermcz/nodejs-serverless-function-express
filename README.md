@@ -12,9 +12,9 @@ An augmented reality web app that lets students explore campus sustainability in
 |---|---|---|
 | **Marker AR** | `/marker` | Point a camera at a printed `.patt` marker to reveal a 3D sustainability overlay (solar panels, recycling data, etc.) |
 | **Campus Location AR** | `/location` | GPS-anchored AR — walk near a campus POI and a 3D model + info card appear via AR.js location-based mode |
-| **Phenology Walk** | `/phenology` | Split-view portal showing Central Park today vs. 2050; Three.js particle systems (blossoms, leaves) render above a live camera feed, with device-orientation parallax |
+| **CubeMap 180** | `/CubeMap` | Unfinished feature. Trying creating a room like the room-wrapper however since of plain white walls the material would be a 180 degree view somewhere in campus |
 | **Marker Creator** | `/marker-creator` | 3-step in-browser tool: capture photo → quality-validate → generate a `.patt` file; downloads locally or saves via API |
-| **Memory Anchors** | — | GPS-pinned notes across campus — stub/in progress |
+
 
 ### Engine Layer (`public/src/`)
 
@@ -46,16 +46,86 @@ An augmented reality web app that lets students explore campus sustainability in
 
 A separate Three.js + TypeScript portfolio scene (baked GLB room with monitor screen, coffee steam particles, galaxy/tunnel shader experiences). Uses Webpack, React UI components, and Draco-compressed models. Not part of the AR flow — it's a standalone 3-D room scene bundled independently.
 
+A suggestion I have is focusing more on creating rooms like this. The reason being simplicity and the potiential of creating appealing UX/UI scenes. The way we will smooth from one scene to another will be based on transitions or animations.
+
 ---
 
 ## Local Development
 
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v18+
+- [Vercel CLI](https://vercel.com/docs/cli): `npm i -g vercel`
+
+### First-time setup
+
+1. Clone the repo and install root dependencies:
+   ```bash
+   git clone <repo-url>
+   cd nodejs-serverless-function-express
+   npm install
+   ```
+
+2. Link the project to **your own** Vercel account:
+   ```bash
+   vercel link
+   ```
+   Follow the prompts — log in, pick your team/personal scope, and either create a new project or link to an existing one. This writes `.vercel/project.json` with your project ID and **auto-generates `.env.local`** with your personal `VERCEL_OIDC_TOKEN`.
+
+   > **Do not copy someone else's `.env.local`.** The token is scoped to the original owner's account and will not work for anyone else. Always run `vercel link` yourself.
+
+3. Start the local dev server:
+   ```bash
+   vercel dev
+   ```
+   This serves both the `/api` serverless routes and the `public/` static files at `http://localhost:3000`.
+
+### `.env.local` explained
+
+`.env.local` is created automatically by the Vercel CLI — you should never need to edit it manually. It contains a short-lived `VERCEL_OIDC_TOKEN` used for local auth against the Vercel platform. It is gitignored and **must not be committed or shared**.
+
+If the token expires or you see auth errors, run `vercel link` again to refresh it.
+
+### Deploying to your own Vercel account
+
 ```bash
-npm i -g vercel
-vercel dev        # serves both /api routes and /public at localhost:3000
+vercel          # preview deployment
+vercel --prod   # production deployment
 ```
 
-The Marker Creator's "Save to project" button writes `.patt` files to `public/assets/markers/` during local dev. On Vercel it returns a 501 and the browser download fallback fires automatically.
+Or push to the `main` branch — if you connected your GitHub repo to Vercel during `vercel link`, every push auto-deploys.
+
+> **Note:** The `POST /api/markers` endpoint that saves `.patt` files cannot write to disk on Vercel's read-only production filesystem. The Marker Creator will automatically fall back to a browser download in that case.
+
+---
+
+## Room Wrapper (Standalone Three.js Scene)
+
+The `room-wrapper/` directory is a fully independent Three.js + TypeScript scene. It has its own `package.json` and Webpack build — install and run it separately from the main project.
+
+```bash
+cd room-wrapper
+npm install
+npm run dev     # webpack-dev-server, hot reload at http://localhost:8080 (or next free port)
+```
+
+For a production build:
+
+```bash
+npm run build   # outputs to room-wrapper/dist/
+```
+
+The dev server picks an available port automatically using `portfinder-sync`, so if 8080 is busy it will move up. Check the terminal output for the exact URL.
+
+**What it contains:**
+- Baked GLB room (computer, decor, environment) rendered with Three.js r137
+- Interactive monitor screen with video texture layers and cursor simulation
+- Coffee steam particle system (custom GLSL shaders)
+- Galaxy and Tunnel shader experiences triggered from the room UI
+- Spatial audio (office ambience, keyboard/mouse SFX, radio tracks)
+- React UI overlay (loading screen, mute toggle, free-cam toggle, info overlay)
+
+The room-wrapper does **not** connect to the Vercel API routes — it is self-contained and can be deployed independently (e.g., to a separate Vercel project or any static host after `npm run build`).
 
 ---
 
@@ -63,7 +133,7 @@ The Marker Creator's "Save to project" button writes `.patt` files to `public/as
 
 ### Short term
 
-- **Replace placeholder GPS coords** — `locations.json` uses Brooklyn coordinates (`40.697…, -73.916…`). Update to your actual campus POIs.
+- **Replace placeholder GPS coords** — `locations.json` uses Brooklyn coordinates (`40.697…, -73.916…`). Update to your actual campus POIs. (I have had trouble with this feature, I suggest working on the cubemap feature first or settle with a QR scan, both more focused on modeling than code)
 - **Add real GLB models** — `modelUrl` fields in `locations.json` point to paths like `/assets/models/solar-panel.glb` that don't exist yet. Create or source low-poly models and drop them in `public/assets/models/`.
 - **Wire up Memory Anchors** — the card on the home screen is marked "In Progress". The `ProximityManager` and API skeleton are already in place; the main work is the UI for creating and reading anchors.
 - **Persist scores server-side** — `scores.json` is a flat file. For multi-user use, replace it with a database (Vercel KV, PlanetScale, Supabase, etc.).
@@ -77,11 +147,6 @@ The Marker Creator's "Save to project" button writes `.patt` files to `public/as
 - **Offline support** — cache `locations.json`, `quiz.json`, and GLB assets in a Service Worker so the app works when campus Wi-Fi is spotty.
 - **Accessibility** — AR canvas experiences have no screen-reader path. Add ARIA live regions for quiz feedback and proximity alerts.
 
-### Longer term
-
-- **Real phenology data** — the Phenology Walk copy is placeholder. Partner with a biology or environmental studies department to source actual plant observation data.
-- **Multi-campus support** — abstract `locations.json` into a campus ID parameter so the same codebase can serve multiple schools.
-- **Native app wrapper** — wrap with Capacitor or Expo to get better camera access, push notifications for "you're near a sustainability spot!", and App Store distribution.
 
 ---
 
@@ -118,10 +183,6 @@ The Marker Creator's "Save to project" button writes `.patt` files to `public/as
 - [Vercel Serverless Functions](https://vercel.com/docs/functions/serverless-functions) — how the `api/` routes work
 - [Vercel Blob storage](https://vercel.com/docs/storage/vercel-blob) — recommended path for persisting generated `.patt` files in production
 - [Vercel KV](https://vercel.com/docs/storage/vercel-kv) — Redis-compatible KV store for replacing `scores.json`
-
-### Phenology / Environmental Data
-- [USA National Phenology Network](https://www.usanpn.org/data) — real plant observation data that could back the Phenology Walk
-- [NOAA Climate Data](https://www.ncei.noaa.gov/access/search/index) — temperature and precipitation projections for 2050 scenarios
 
 ---
 
