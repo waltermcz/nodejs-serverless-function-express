@@ -72,8 +72,6 @@ A suggestion I have is focusing more on creating rooms like this. The reason bei
    ```
    Follow the prompts — log in, pick your team/personal scope, and either create a new project or link to an existing one. This writes `.vercel/project.json` with your project ID and **auto-generates `.env.local`** with your personal `VERCEL_OIDC_TOKEN`.
 
-   > **Do not copy someone else's `.env.local`.** The token is scoped to the original owner's account and will not work for anyone else. Always run `vercel link` yourself.
-
 3. Start the local dev server:
    ```bash
    vercel dev
@@ -136,12 +134,12 @@ The room-wrapper does **not** connect to the Vercel API routes — it is self-co
 - **Replace placeholder GPS coords** — `locations.json` uses Brooklyn coordinates (`40.697…, -73.916…`). Update to your actual campus POIs. (I have had trouble with this feature, I suggest working on the cubemap feature first or settle with a QR scan, both more focused on modeling than code)
 - **Add real GLB models** — `modelUrl` fields in `locations.json` point to paths like `/assets/models/solar-panel.glb` that don't exist yet. Create or source low-poly models and drop them in `public/assets/models/`.
 - **Wire up Memory Anchors** — the card on the home screen is marked "In Progress". The `ProximityManager` and API skeleton are already in place; the main work is the UI for creating and reading anchors.
-- **Persist scores server-side** — `scores.json` is a flat file. For multi-user use, replace it with a database (Vercel KV, PlanetScale, Supabase, etc.).
+- **Persist scores server-side** — `scores.json` is a flat file. For multi-user use, replace it with a database if needed (Vercel KV, PlanetScale, Supabase, etc.).
 - **Expand the quiz** — `quiz.json` has minimal questions. Add more per location with varied `topic` values to enrich the BFS graph traversal.
 
 ### Medium term
 
-- **User accounts / leaderboard** — add auth (Clerk, NextAuth) so quiz scores are tied to a student ID and can be displayed publicly.
+- **User accounts / leaderboard** — add auth (Clerk, NextAuth) so quiz scores are tied to a student ID and can be displayed publicly. (low priority)
 - **Admin panel for markers** — right now new `.patt` files require local dev or a manual upload. A simple password-protected page backed by Vercel Blob storage would let campus staff add markers without touching code.
 - **Improve GPS accuracy** — `ProximityManager` uses raw `watchPosition`. On Android, GPS jitter can cause false enter/exit events. Add a dead-band filter: only fire `onExit` if the user has been outside the radius for ≥ 3 consecutive readings.
 - **Offline support** — cache `locations.json`, `quiz.json`, and GLB assets in a Service Worker so the app works when campus Wi-Fi is spotty.
